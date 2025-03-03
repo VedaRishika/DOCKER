@@ -1,3 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: text-processor-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/Users/vedarishikareddynalla/home/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: text-processor-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,12 +36,13 @@ spec:
         app: text-processor
     spec:
       containers:
-        - name: text-processor
-          image: text-processor:latest
-          volumeMounts:
-            - name: data-volume
-              mountPath: /home/data
-      volumes:
+      - name: text-processor
+        image: text-processor:latest
+        volumeMounts:
         - name: data-volume
-          persistentVolumeClaim:
-            claimName: text-processor-pvc
+          mountPath: /home/data
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: text-processor-pvc
+
